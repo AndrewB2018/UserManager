@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UserManager.Data.Repositories.Interface;
+using UserManager.DataEntities.Enum;
 using UserManager.DataEntities.Models;
 using UserManager.Services.Interface;
 
@@ -113,12 +114,23 @@ namespace UserManager.Services
 
             if(hasNumber.IsMatch(user.Password) && hasUpperChar.IsMatch(user.Password) && hasMinimum8Chars.IsMatch(user.Password))
             {
-                // Good password
+                // Probably a good password, check strength is right
+                if (user.PasswordStrength == (int)SharedEnum.PasswordStrength.Short)
+                {
+                    errors.Add("Password", "Password is too short.");
+                }
+
+                if (user.PasswordStrength == (int)SharedEnum.PasswordStrength.Weak)
+                {
+                    errors.Add("Password", "Password is too weak.");
+                }
             }
             else
             {
                 errors.Add("Password", "Password should be minimum 8 characters in length and contain both letters and numbers, at least one uppercase letter.");
-            }           
+            }
+            
+            
 
             return errors;
         }

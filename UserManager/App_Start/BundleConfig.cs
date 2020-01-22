@@ -23,9 +23,15 @@ namespace UserManager
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/checkPasswordStrength").Include(
+                        "~/Scripts/CheckPasswordStrength.js"));
+
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new StyleBundle("~/Content/CheckPasswordStrength").Include(
+                      "~/Content/CheckPasswordStrength.css"));
         }
     }
 }

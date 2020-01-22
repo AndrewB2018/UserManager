@@ -22,6 +22,9 @@ namespace UserManager.DataEntities.Models
         [MaxLength(128)]
         public string Password { get; set; }
 
+        [NotMapped]
+        public int PasswordStrength { get; set; }
+
         [Required]
         [MaxLength(100)]
         [DisplayName("First Name")]

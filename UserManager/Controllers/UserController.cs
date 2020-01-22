@@ -61,7 +61,7 @@ namespace UserManager.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "UserId,Username,Password,FirstName,LastName,DateOfBirth,Email,Phone,Mobile")] User user)
+        public ActionResult Create([Bind(Include = "UserId,Username,Password,PasswordStrength,FirstName,LastName,DateOfBirth,Email,Phone,Mobile")] User user)
         {
             ModelState.Merge(_userService.ValidateUser(user), "");
 
