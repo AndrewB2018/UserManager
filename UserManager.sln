@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManager", "UserManager\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManager.DataEntities", "UserManager.DataEntities\UserManager.DataEntities.csproj", "{918F1D0B-903B-4C86-B4A5-88FBC8F03647}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManager.Data", "UserManager.Data\UserManager.Data.csproj", "{B808BBEC-6198-42AC-AAB7-92E8B0768158}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{918F1D0B-903B-4C86-B4A5-88FBC8F03647}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{918F1D0B-903B-4C86-B4A5-88FBC8F03647}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{918F1D0B-903B-4C86-B4A5-88FBC8F03647}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B808BBEC-6198-42AC-AAB7-92E8B0768158}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B808BBEC-6198-42AC-AAB7-92E8B0768158}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B808BBEC-6198-42AC-AAB7-92E8B0768158}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B808BBEC-6198-42AC-AAB7-92E8B0768158}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
