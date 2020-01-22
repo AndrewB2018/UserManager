@@ -2,7 +2,7 @@
 using System.Data.Entity.ModelConfiguration.Conventions;
 using UserManager.DataEntities.Models;
 
-namespace CPUserManager.DAL
+namespace UserManager.Data.Context
 {
     public class UserManagerContext : DbContext
     {

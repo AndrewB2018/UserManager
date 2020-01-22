@@ -1,24 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
+﻿using System.Net;
 using System.Web.Mvc;
-using CPUserManager.DAL;
+using System;
+using UserManager.Services.Interface;
 using UserManager.DataEntities.Models;
 
 namespace UserManager.Controllers
 {
     public class UserController : Controller
     {
-        private UserManagerContext db = new UserManagerContext();
+        private IUserService _userService;
+
+        public UserController(IUserService userService)
+        {
+            _userService = userService;
+        }
 
         // GET: User
         public ActionResult Index()
         {
-            return View(db.Users.ToList());
+            try
+            {
+                return View(_userService.GetUsers());
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error loading user index page", e);
+            }
         }
 
         // GET: User/Details/5
@@ -28,7 +35,9 @@ namespace UserManager.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
+
+            User user = _userService.GetUserById((int)id);
+
             if (user == null)
             {
                 return HttpNotFound();
@@ -51,8 +60,7 @@ namespace UserManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Users.Add(user);
-                db.SaveChanges();
+                _userService.CreateUser(user);
                 return RedirectToAction("Index");
             }
 
@@ -66,7 +74,8 @@ namespace UserManager.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
+
+            User user = _userService.GetUserById((int)id);
             if (user == null)
             {
                 return HttpNotFound();
@@ -83,8 +92,8 @@ namespace UserManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
+                _userService.UpdateUser(user);
+
                 return RedirectToAction("Index");
             }
             return View(user);
@@ -97,7 +106,7 @@ namespace UserManager.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
+            User user = _userService.GetUserById((int)id);
             if (user == null)
             {
                 return HttpNotFound();
@@ -110,19 +119,10 @@ namespace UserManager.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            User user = db.Users.Find(id);
-            db.Users.Remove(user);
-            db.SaveChanges();
+            _userService.DeleteUser(id);
+
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }
