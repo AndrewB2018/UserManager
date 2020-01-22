@@ -140,9 +140,12 @@ namespace UserManager.Services
             // If theres no groups selected then remove any that currently exist and return
             if (selectedGroups == null)
             {
-                if (userToUpdate.UserGroups != null && userToUpdate.UserGroups.Any())
+                if (userToUpdate.UserGroups != null && userToUpdate.UserGroups.Count > 0)
                 {
-                    foreach (UserGroup userGroupToRemove in userToUpdate.UserGroups)
+                    // Cast users to new list so we can interate and delete from the user groups collection
+                    List<UserGroup> userGroupsToRemove = userToUpdate.UserGroups.ToList();
+
+                    foreach (UserGroup userGroupToRemove in userGroupsToRemove)
                     {
                         _userRepository.DeleteUsersGroup(userGroupToRemove);
                     }
