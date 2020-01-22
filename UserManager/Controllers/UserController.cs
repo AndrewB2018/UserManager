@@ -36,27 +36,41 @@ namespace UserManager.Controllers
         // GET: User/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            try
+            { 
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
 
-            User user = _userService.GetUserById((int)id);
+                User user = _userService.GetUserById((int)id);
 
-            if (user == null)
-            {
-                return HttpNotFound();
+                if (user == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(user);
             }
-            return View(user);
+            catch (Exception e)
+            {
+                throw new Exception("Error getting user details", e);
+            }
         }
 
         // GET: User/Create
         public ActionResult Create()
         {
-            // Would normally put this in a view model but adding to viewbag to save time
-            ViewBag.Groups = _groupService.GetGroups();
+            try
+            { 
+                // Would normally put this in a view model but adding to viewbag to save time
+                ViewBag.Groups = _groupService.GetGroups();
 
-            return View();
+                return View();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error loading create user page", e);
+            }
         }
 
         // POST: User/Create
@@ -66,44 +80,58 @@ namespace UserManager.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "UserId,Username,Password,PasswordStrength,FirstName,LastName,DateOfBirth,Email,Phone,Mobile")] User user, string[] selectedGroups)
         {
-            ModelState.Merge(_userService.ValidateUser(user), "");
+            try
+            { 
+                ModelState.Merge(_userService.ValidateUser(user), "");
 
-            if (ModelState.IsValid)
-            {
-                _userService.CreateUser(user);
-                _userService.UpdateUserGroups(selectedGroups, user);
+                if (ModelState.IsValid)
+                {
+                    _userService.CreateUser(user);
+                    _userService.UpdateUserGroups(selectedGroups, user);
 
-                _userService.UpdateUser(user);
+                    _userService.UpdateUser(user);
 
-                return RedirectToAction("Index");
+                    return RedirectToAction("Index");
                 
+                }
+
+                ViewBag.Groups = _groupService.GetGroups();
+                ViewBag.SelectedGroups = new List<int>(user.UserGroups.Select(c => c.GroupId));
+
+                return View(user);
             }
-
-            ViewBag.Groups = _groupService.GetGroups();
-            ViewBag.SelectedGroups = new List<int>(user.UserGroups.Select(c => c.GroupId));
-
-            return View(user);
+            catch (Exception e)
+            {
+                throw new Exception("Error creating a user", e);
+            }
         }
 
         // GET: User/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
 
-            User user = _userService.GetUserById((int)id);
-            if (user == null)
+                User user = _userService.GetUserById((int)id);
+                if (user == null)
+                {
+                    return HttpNotFound();
+                }
+
+                // Would normally put this in a view model but adding to viewbag to save time
+                ViewBag.Groups = _groupService.GetGroups();
+                ViewBag.SelectedGroups = new List<int>(user.UserGroups.Select(c => c.GroupId));
+
+                return View(user);
+            }
+            catch (Exception e)
             {
-                return HttpNotFound();
+                throw new Exception("Error getting edit user page", e);
             }
-
-            // Would normally put this in a view model but adding to viewbag to save time
-            ViewBag.Groups = _groupService.GetGroups();
-            ViewBag.SelectedGroups = new List<int>(user.UserGroups.Select(c => c.GroupId));
-
-            return View(user);
         }
 
         // POST: User/Edit/5
@@ -113,37 +141,51 @@ namespace UserManager.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "UserId,Username,Password,FirstName,LastName,DateOfBirth,Email,Phone,Mobile")] User user, string[] selectedGroups)
         {
-            if (ModelState.IsValid)
-            {
-                var userToUpdate = _userService.GetUserById(user.UserId);
-
-                if (TryUpdateModel(userToUpdate))
+            try
+            { 
+                if (ModelState.IsValid)
                 {
-                    _userService.UpdateUserGroups(selectedGroups, userToUpdate);
+                    var userToUpdate = _userService.GetUserById(user.UserId);
 
-                    _userService.UpdateUser(user);
-                    return RedirectToAction("Index");
+                    if (TryUpdateModel(userToUpdate))
+                    {
+                        _userService.UpdateUserGroups(selectedGroups, userToUpdate);
+
+                        _userService.UpdateUser(user);
+                        return RedirectToAction("Index");
+                    }
                 }
-            }
-            ViewBag.Groups = _groupService.GetGroups();
-            ViewBag.SelectedGroups = new List<int>(user.UserGroups.Select(c => c.GroupId));
+                ViewBag.Groups = _groupService.GetGroups();
+                ViewBag.SelectedGroups = new List<int>(user.UserGroups.Select(c => c.GroupId));
 
-            return View(user);
+                return View(user);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error editing a user", e);
+            }
         }
 
         // GET: User/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            try
+            { 
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                User user = _userService.GetUserById((int)id);
+                if (user == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(user);
             }
-            User user = _userService.GetUserById((int)id);
-            if (user == null)
+            catch (Exception e)
             {
-                return HttpNotFound();
+                throw new Exception("Error getting delete confirmation page", e);
             }
-            return View(user);
         }
 
         // POST: User/Delete/5
@@ -151,10 +193,16 @@ namespace UserManager.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            _userService.DeleteUser(id);
+            try
+            {
+                _userService.DeleteUser(id);
 
-            return RedirectToAction("Index");
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error deleting a user", e);
+            }
         }
-
     }
 }

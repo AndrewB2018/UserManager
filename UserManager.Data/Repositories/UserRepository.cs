@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using UserManager.Data.Context;
@@ -13,25 +14,47 @@ namespace UserManager.Data.Repositories
 
         public IEnumerable<User> GetUsers()
         {
-            IEnumerable<User> users = db.Users;
+            try
+            { 
+                IEnumerable<User> users = db.Users;
 
-            return users;
+                return users;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error getting users from database", e);
+            }
         }
 
         public User GetUserById(int id)
         {
-            User user = db.Users
-                   .Include(i => i.UserGroups)
-                   .Where(i => i.UserId == id)
-                   .Single();
+            try
+            { 
+                User user = db.Users
+                       .Include(i => i.UserGroups)
+                       .Where(i => i.UserId == id)
+                       .Single();
 
-            return user;
+                return user;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error getting user by id:" +id, e);
+            }
         }
 
         public void CreateUser(User user)
         {
-            db.Users.Add(user);
-            db.SaveChanges();
+            try
+            {
+                db.Users.Add(user);
+                db.SaveChanges();
+            
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error creating a new user in the database", e);
+            }
         }
 
         public void UpdateUser(User user)
@@ -42,15 +65,29 @@ namespace UserManager.Data.Repositories
 
         public void DeleteUser(int id)
         {
-            User user = db.Users.Find(id);
-            db.Users.Remove(user);
-            db.SaveChanges();
+            try
+            { 
+                User user = db.Users.Find(id);
+                db.Users.Remove(user);
+                db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error deleting a user from database", e);
+            }
         }
 
         public void DeleteUsersGroup(UserGroup userGroup)
         {
-            db.UserGroups.Remove(userGroup);
-            db.SaveChanges();
+            try
+            { 
+                db.UserGroups.Remove(userGroup);
+                db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error deleting a users group from database", e);
+            }
         }
 
 
