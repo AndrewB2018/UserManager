@@ -170,6 +170,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -234,6 +235,11 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\User\Create.cshtml" />
+    <Content Include="Views\User\Delete.cshtml" />
+    <Content Include="Views\User\Details.cshtml" />
+    <Content Include="Views\User\Edit.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -250,6 +256,10 @@
     <ProjectReference Include="..\UserManager.DataEntities\UserManager.DataEntities.csproj">
       <Project>{918f1d0b-903b-4c86-b4a5-88fbc8f03647}</Project>
       <Name>UserManager.DataEntities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UserManager.Data\UserManager.Data.csproj">
+      <Project>{b808bbec-6198-42ac-aab7-92e8b0768158}</Project>
+      <Name>UserManager.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
