@@ -53,6 +53,9 @@ namespace UserManager.Controllers
         // GET: User/Create
         public ActionResult Create()
         {
+            // Would normally put this in a view model but adding to viewbag to save time
+            ViewBag.Groups = _groupService.GetGroups();
+
             return View();
         }
 
@@ -61,15 +64,23 @@ namespace UserManager.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "UserId,Username,Password,PasswordStrength,FirstName,LastName,DateOfBirth,Email,Phone,Mobile")] User user)
+        public ActionResult Create([Bind(Include = "UserId,Username,Password,PasswordStrength,FirstName,LastName,DateOfBirth,Email,Phone,Mobile")] User user, string[] selectedGroups)
         {
             ModelState.Merge(_userService.ValidateUser(user), "");
 
             if (ModelState.IsValid)
             {
                 _userService.CreateUser(user);
+                _userService.UpdateUserGroups(selectedGroups, user);
+
+                _userService.UpdateUser(user);
+
                 return RedirectToAction("Index");
+                
             }
+
+            ViewBag.Groups = _groupService.GetGroups();
+            ViewBag.SelectedGroups = new List<int>(user.UserGroups.Select(c => c.GroupId));
 
             return View(user);
         }
@@ -114,6 +125,9 @@ namespace UserManager.Controllers
                     return RedirectToAction("Index");
                 }
             }
+            ViewBag.Groups = _groupService.GetGroups();
+            ViewBag.SelectedGroups = new List<int>(user.UserGroups.Select(c => c.GroupId));
+
             return View(user);
         }
 

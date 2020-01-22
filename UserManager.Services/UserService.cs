@@ -137,29 +137,43 @@ namespace UserManager.Services
 
         public void UpdateUserGroups(string[] selectedGroups, User userToUpdate)
         {
+            // If theres no groups selected then remove any that currently exist and return
             if (selectedGroups == null)
             {
-                if (userToUpdate.UserGroups.Any())
+                if (userToUpdate.UserGroups != null && userToUpdate.UserGroups.Any())
                 {
                     foreach (UserGroup userGroupToRemove in userToUpdate.UserGroups)
                     {
                         _userRepository.DeleteUsersGroup(userGroupToRemove);
                     }
                 }
-
                 return;
-
             }
 
-            var selectedGroupsHS = new HashSet<string>(selectedGroups);
-            var userGroups = new HashSet<int>
-                (userToUpdate.UserGroups.Select(c => c.GroupId));
+            // Selected groups
+            HashSet<string> selectedGroupsHS = new HashSet<string>(selectedGroups);
+
+            // Empty user groups to add the ones the user previously had to
+            HashSet<int> userGroups = new HashSet<int>();
+
+            // Are there any previous groups
+            if (userToUpdate.UserGroups != null)
+            {
+                userGroups = new HashSet<int>(userToUpdate.UserGroups.Select(c => c.GroupId));
+            }
+            
             foreach (var group in _groupRepository.GetGroups())
             {
                 if (selectedGroupsHS.Contains(group.GroupId.ToString()))
                 {
                     if (!userGroups.Contains(group.GroupId))
                     {
+                        // If a user group doesnt currently exist for this user, create a new list to add to
+                        if (userToUpdate.UserGroups == null)
+                        {
+                            userToUpdate.UserGroups = new List<UserGroup>();
+                        }
+
                         userToUpdate.UserGroups.Add(new UserGroup { GroupId = group.GroupId, UserId = userToUpdate.UserId });
                     }
                 }
