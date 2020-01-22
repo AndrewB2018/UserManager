@@ -45,9 +45,11 @@ namespace UserManager
             // container.LoadConfiguration();
 
             //Services
+            container.RegisterType<IGroupService, GroupService>();
             container.RegisterType<IUserService, UserService>();
 
             //Repositories
+            container.RegisterType<IGroupRepository, GroupRepository>();
             container.RegisterType<IUserRepository, UserRepository>();
         }
     }
