@@ -1,41 +1,67 @@
-﻿using System.Data.Entity;
-using System.Linq;
+﻿using System;
 using System.Net;
 using System.Web.Mvc;
-using UserManager.Data.Context;
 using UserManager.DataEntities.Models;
+using UserManager.Services.Interface;
 
 namespace UserManager.Controllers
 {
     public class GroupController : Controller
     {
-        private UserManagerContext db = new UserManagerContext();
+        private IGroupService _groupService;
+
+        public GroupController(IGroupService groupService)
+        {
+            _groupService = groupService;
+        }
 
         // GET: Group
         public ActionResult Index()
         {
-            return View(db.Groups.ToList());
+            try
+            { 
+                return View(_groupService.GetGroups());
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error getting groups", e);
+            }
         }
 
         // GET: Group/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            try
+            { 
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Group group = _groupService.GetGroupById((int)id);
+                if (group == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(group);
             }
-            Group group = db.Groups.Find(id);
-            if (group == null)
+            catch (Exception e)
             {
-                return HttpNotFound();
+                throw new Exception($"Error getting group details for id: " + id, e);
             }
-            return View(group);
         }
 
         // GET: Group/Create
         public ActionResult Create()
         {
-            return View();
+            try
+            { 
+                return View();
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error getting create page", e);
+            }
         }
 
         // POST: Group/Create
@@ -45,29 +71,43 @@ namespace UserManager.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "GroupId,GroupName,Description")] Group group)
         {
-            if (ModelState.IsValid)
-            {
-                db.Groups.Add(group);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+            try
+            { 
+                if (ModelState.IsValid)
+                {
+                    _groupService.CreateGroup(group);
 
-            return View(group);
+                    return RedirectToAction("Index");
+                }
+
+                return View(group);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error creating a new group", e);
+            }
         }
 
         // GET: Group/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            try
+            { 
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Group group = _groupService.GetGroupById((int)id);
+                if (group == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(group);
             }
-            Group group = db.Groups.Find(id);
-            if (group == null)
+            catch (Exception e)
             {
-                return HttpNotFound();
+                throw new Exception($"Error loading the edit page for id: " + id, e);
             }
-            return View(group);
         }
 
         // POST: Group/Edit/5
@@ -77,28 +117,44 @@ namespace UserManager.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "GroupId,GroupName,Description")] Group group)
         {
-            if (ModelState.IsValid)
-            {
-                db.Entry(group).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+            try
+            { 
+                if (ModelState.IsValid)
+                {
+                    _groupService.UpdateGroup(group);
+
+                    return RedirectToAction("Index");
+                }
+                return View(group);
             }
-            return View(group);
+            catch (Exception e)
+            {
+                throw new Exception($"Error updating the group", e);
+            }
         }
 
         // GET: Group/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Group group = _groupService.GetGroupById((int)id);
+
+                if (group == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(group);
             }
-            Group group = db.Groups.Find(id);
-            if (group == null)
+            catch (Exception e)
             {
-                return HttpNotFound();
+                throw new Exception($"Error getting the delete page for id: " + id, e);
             }
-            return View(group);
+
         }
 
         // POST: Group/Delete/5
@@ -106,19 +162,15 @@ namespace UserManager.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Group group = db.Groups.Find(id);
-            db.Groups.Remove(group);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
+            try
+            { 
+                _groupService.DeleteGroup(id);
+                return RedirectToAction("Index");
             }
-            base.Dispose(disposing);
+            catch (Exception e)
+            {
+                throw new Exception($"Error when attempting to delete group with id: " + id, e);
+            }
         }
     }
 }
