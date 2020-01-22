@@ -3,16 +3,21 @@ using System.Web.Mvc;
 using System;
 using UserManager.Services.Interface;
 using UserManager.DataEntities.Models;
+using UserManager.Extensions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace UserManager.Controllers
 {
     public class UserController : Controller
     {
         private IUserService _userService;
+        private IGroupService _groupService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IGroupService groupService)
         {
             _userService = userService;
+            _groupService = groupService;
         }
 
         // GET: User
@@ -58,6 +63,8 @@ namespace UserManager.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "UserId,Username,Password,FirstName,LastName,DateOfBirth,Email,Phone,Mobile")] User user)
         {
+            ModelState.Merge(_userService.ValidateUser(user), "");
+
             if (ModelState.IsValid)
             {
                 _userService.CreateUser(user);
@@ -80,6 +87,11 @@ namespace UserManager.Controllers
             {
                 return HttpNotFound();
             }
+
+            // Would normally put this in a view model but adding to viewbag to save time
+            ViewBag.Groups = _groupService.GetGroups();
+            ViewBag.SelectedGroups = new List<int>(user.UserGroups.Select(c => c.GroupId));
+
             return View(user);
         }
 
@@ -88,13 +100,19 @@ namespace UserManager.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "UserId,Username,Password,FirstName,LastName,DateOfBirth,Email,Phone,Mobile")] User user)
+        public ActionResult Edit([Bind(Include = "UserId,Username,Password,FirstName,LastName,DateOfBirth,Email,Phone,Mobile")] User user, string[] selectedGroups)
         {
             if (ModelState.IsValid)
             {
-                _userService.UpdateUser(user);
+                var userToUpdate = _userService.GetUserById(user.UserId);
 
-                return RedirectToAction("Index");
+                if (TryUpdateModel(userToUpdate))
+                {
+                    _userService.UpdateUserGroups(selectedGroups, userToUpdate);
+
+                    _userService.UpdateUser(user);
+                    return RedirectToAction("Index");
+                }
             }
             return View(user);
         }

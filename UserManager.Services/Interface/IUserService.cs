@@ -11,6 +11,8 @@ namespace UserManager.Services.Interface
         void UpdateUser(User user);
         void DeleteUser(int id);
         User GetUserByUsername(string username);
+        Dictionary<string, string> ValidateUser(User user);
+        void UpdateUserGroups(string[] selectedGroups, User userToUpdate);
 
     }
 }

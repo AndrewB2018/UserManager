@@ -10,5 +10,6 @@ namespace UserManager.Data.Repositories.Interface
         void CreateUser(User user);
         void UpdateUser(User user);
         void DeleteUser(int id);
+        void DeleteUsersGroup(UserGroup userGroup);
     }
 }

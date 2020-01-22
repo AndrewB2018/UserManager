@@ -80,6 +80,14 @@
                 @Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "text-danger" })
             </div>
         </div>
+        
+        <h3>Groups</h3>
+        @foreach (var group in ViewBag.Groups)
+        {
+            <input type="checkbox" name="selectedGroups" value="@group.GroupId" @(Html.Raw((ViewBag.SelectedGroups.Contains(group.GroupId)) ? "checked=\"checked\"" : "")) />
+                @group.GroupName
+
+        }
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
